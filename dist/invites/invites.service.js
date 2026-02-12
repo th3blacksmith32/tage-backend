@@ -44,4 +44,3 @@ exports.InvitesService = InvitesService = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         users_service_1.UsersService])
 ], InvitesService);
-//# sourceMappingURL=invites.service.js.map

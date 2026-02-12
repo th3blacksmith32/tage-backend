@@ -25,4 +25,3 @@ exports.TasksModule = TasksModule = __decorate([
         exports: [tasks_service_1.TasksService]
     })
 ], TasksModule);
-//# sourceMappingURL=tasks.module.js.map

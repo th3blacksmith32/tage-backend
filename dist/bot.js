@@ -17,4 +17,3 @@ bot.onText(/\/start(.*)/, (msg, match) => {
         }
     });
 });
-//# sourceMappingURL=bot.js.map

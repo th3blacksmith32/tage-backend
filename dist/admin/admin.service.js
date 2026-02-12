@@ -14,4 +14,3 @@ exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)()
 ], AdminService);
-//# sourceMappingURL=admin.service.js.map

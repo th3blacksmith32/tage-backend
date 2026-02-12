@@ -60,4 +60,3 @@ exports.AuthService = AuthService = __decorate([
         invites_service_1.InvitesService,
         jwt_1.JwtService])
 ], AuthService);
-//# sourceMappingURL=auth.service.js.map

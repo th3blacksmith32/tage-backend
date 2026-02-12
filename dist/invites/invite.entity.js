@@ -29,4 +29,3 @@ __decorate([
 exports.Invite = Invite = __decorate([
     (0, typeorm_1.Entity)()
 ], Invite);
-//# sourceMappingURL=invite.entity.js.map

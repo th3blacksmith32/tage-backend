@@ -26,4 +26,3 @@ __decorate([
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('admin')
 ], AdminController);
-//# sourceMappingURL=admin.controller.js.map

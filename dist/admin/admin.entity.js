@@ -29,4 +29,3 @@ __decorate([
 exports.Admin = Admin = __decorate([
     (0, typeorm_1.Entity)()
 ], Admin);
-//# sourceMappingURL=admin.entity.js.map

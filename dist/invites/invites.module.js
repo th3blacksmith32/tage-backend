@@ -22,4 +22,3 @@ exports.InvitesModule = InvitesModule = __decorate([
         exports: [invites_service_1.InvitesService]
     })
 ], InvitesModule);
-//# sourceMappingURL=invites.module.js.map

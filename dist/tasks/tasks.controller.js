@@ -45,4 +45,3 @@ exports.TasksController = TasksController = __decorate([
     (0, common_1.Controller)('tasks'),
     __metadata("design:paramtypes", [tasks_service_1.TasksService])
 ], TasksController);
-//# sourceMappingURL=tasks.controller.js.map

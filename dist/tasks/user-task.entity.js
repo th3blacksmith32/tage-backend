@@ -37,4 +37,3 @@ __decorate([
 exports.UserTask = UserTask = __decorate([
     (0, typeorm_1.Entity)()
 ], UserTask);
-//# sourceMappingURL=user-task.entity.js.map
