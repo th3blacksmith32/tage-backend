@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserTask } from './user-task.entity';
 import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
-import { UsersModule } from '../users/users.module';
-import { InvitesModule } from '../invites/invites.module';
+import { Task } from './task.entity';
+import { UserTask } from './user-task.entity';
+import { User } from '../users/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserTask]), UsersModule, InvitesModule],
+  imports: [TypeOrmModule.forFeature([Task, UserTask, User])],
   providers: [TasksService],
   controllers: [TasksController],
-  exports: [TasksService]
+  exports: [TasksService],
 })
 export class TasksModule {}

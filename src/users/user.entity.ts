@@ -1,22 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ unique: true })
   telegramId: string;
 
-  @Column({ default: 0 })
+  @Column({ nullable: true })
+  username: string;
+
+  @Column({ type: 'double precision', default: 0 })
   balance: number;
 
-  @Column({ default: false })
-  telegramAgeGranted: boolean;
-
-  @Column({ default: 0 })
-  telegramAgeReward: number;
+  @Column({ type: 'double precision', default: 0 })
+  totalEarned: number;
 
   @Column({ nullable: true })
-  inviterId: string;
+  invitedBy: number;
+
+  @Column({ default: false })
+  ageRewardClaimed: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

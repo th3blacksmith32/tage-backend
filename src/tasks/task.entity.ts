@@ -1,13 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ unique: true })
-  code: string;
+  @Column()
+  title: string;
+
+  @Column({ type: 'double precision' })
+  reward: number;
+
+  @Column()
+  url: string;
 
   @Column({ default: 0 })
-  reward: number;
+  cooldownSeconds: number;
 }

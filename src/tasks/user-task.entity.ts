@@ -1,19 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { User } from '../users/user.entity';
+import { Task } from './task.entity';
 
 @Entity()
 export class UserTask {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
-  userId: string;
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  user: User;
 
-  @Column()
-  taskId: string;
+  @ManyToOne(() => Task, { onDelete: 'CASCADE' })
+  task: Task;
 
-  @Column({ type: 'timestamptz' })
-  startedAt: Date;
-
-  @Column({ type: 'timestamptz', nullable: true })
+  @CreateDateColumn()
   claimedAt: Date;
 }

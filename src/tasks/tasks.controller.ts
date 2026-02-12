@@ -1,17 +1,19 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private tasks: TasksService) {}
+  constructor(private readonly tasksService: TasksService) {}
 
-  @Post('start')
-  start(@Body() body: { userId: string; taskId: string }) {
-    return this.tasks.start(body.userId, body.taskId);
+  @Get()
+  listTasks() {
+    return this.tasksService.listTasks();
   }
 
-  @Post('claim')
-  claim(@Body() body: { userId: string; taskId: string; reward: number }) {
-    return this.tasks.claim(body.userId, body.taskId, body.reward);
+  @UseGuards(JwtGuard)
+  @Post(':taskId/claim')
+  claimTask(@Req() req: { userId: number }, @Param('taskId', ParseIntPipe) taskId: number) {
+    return this.tasksService.claimTask(req.userId, taskId);
   }
 }

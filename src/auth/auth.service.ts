@@ -1,53 +1,84 @@
-import * as crypto from 'crypto';
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { InvitesService } from '../invites/invites.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/user.entity';
+import * as crypto from 'crypto';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private users: UsersService,
-    private invites: InvitesService,
-    private jwt: JwtService
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {}
 
   verifyTelegram(initData: string) {
-    const params = new URLSearchParams(initData);
-    const hash = params.get('hash');
-    params.delete('hash');
+    const token = process.env.TG_BOT_TOKEN;
+    if (!token) {
+      return false;
+    }
 
-    const data = [...params.entries()]
+    const secret = crypto.createHash('sha256').update(token).digest();
+
+    const parsed = new URLSearchParams(initData);
+    const hash = parsed.get('hash');
+    if (!hash) {
+      return false;
+    }
+
+    parsed.delete('hash');
+
+    const dataCheckString = [...parsed.entries()]
       .sort()
       .map(([k, v]) => `${k}=${v}`)
       .join('\n');
 
-    const secret = crypto
-      .createHash('sha256')
-      .update(process.env.TG_BOT_TOKEN!)
-      .digest();
+    const hmac = crypto.createHmac('sha256', secret).update(dataCheckString).digest('hex');
 
-    const check = crypto
-      .createHmac('sha256', secret)
-      .update(data)
-      .digest('hex');
-
-    if (check !== hash) throw new Error('Invalid Telegram');
-
-    return Object.fromEntries(params);
+    return hmac === hash;
   }
 
-  async login(initData: string, startParam?: string) {
-    const tg = this.verifyTelegram(initData);
-    const user = await this.users.findOrCreate(tg.id);
+  estimateDays(id: number) {
+    const telegramEpoch = 1388534400;
+    const approx = telegramEpoch + id / 1000000000;
+    const days = Math.floor((Date.now() / 1000 - approx) / 86400);
+    return Math.max(0, days);
+  }
 
-    if (startParam?.startsWith('ref_') && !user.inviterId) {
-      const inviterId = startParam.replace('ref_', '');
-      await this.invites.link(inviterId, user.id);
+  async loginOrCreate(telegramUser: { id: number; username?: string }, ref?: number) {
+    const telegramId = String(telegramUser.id);
+
+    let user = await this.userRepo.findOne({ where: { telegramId } });
+
+    if (!user) {
+      user = this.userRepo.create({
+        telegramId,
+        username: telegramUser.username || null,
+        invitedBy: ref || null,
+      });
+      await this.userRepo.save(user);
+    } else if (!user.invitedBy && ref && ref !== user.id) {
+      user.invitedBy = ref;
+      await this.userRepo.save(user);
     }
 
-    return {
-      token: this.jwt.sign({ sub: user.id })
-    };
+    if (!user.ageRewardClaimed) {
+      const days = this.estimateDays(Number(user.telegramId));
+      const reward = days * 20;
+
+      user.balance += reward;
+      user.totalEarned += reward;
+      user.ageRewardClaimed = true;
+      await this.userRepo.save(user);
+    }
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('Missing JWT_SECRET');
+    }
+
+    const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '30d' });
+
+    return { token, user };
   }
 }
