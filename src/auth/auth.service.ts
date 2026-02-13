@@ -12,18 +12,10 @@ export class AuthService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  verifyTelegram(initData: string) {
-    const botToken = process.env.TG_BOT_TOKEN;
-    if (!botToken) {
-      return false;
-    }
-
+  validateTelegramData(initData: string): boolean {
+    const botToken = process.env.TG_BOT_TOKEN!;
     const urlParams = new URLSearchParams(initData);
     const hash = urlParams.get('hash');
-    if (!hash) {
-      return false;
-    }
-
     urlParams.delete('hash');
 
     const dataCheckString = [...urlParams.entries()]
@@ -33,12 +25,12 @@ export class AuthService {
 
     const secretKey = crypto.createHash('sha256').update(botToken).digest();
 
-    const hmac = crypto
+    const calculatedHash = crypto
       .createHmac('sha256', secretKey)
       .update(dataCheckString)
       .digest('hex');
 
-    return hmac === hash;
+    return calculatedHash === hash;
   }
 
   estimateDays(id: number) {

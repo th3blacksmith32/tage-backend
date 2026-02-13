@@ -9,14 +9,14 @@ export class AuthController {
   async telegram(@Body() body: { initData: string; ref?: number }) {
     const { initData, ref } = body || {};
 
-    console.log('BOT TOKEN:', process.env.TG_BOT_TOKEN?.slice(0, 10));
-    console.log('INIT DATA:', initData?.slice(0, 100));
+    console.log('TOKEN:', process.env.TG_BOT_TOKEN?.slice(0, 10));
+    console.log('INITDATA:', initData?.slice(0, 50));
 
     if (!initData) {
       throw new UnauthorizedException('Missing initData');
     }
 
-    const valid = this.authService.verifyTelegram(initData);
+    const valid = this.authService.validateTelegramData(initData);
     if (!valid) {
       throw new UnauthorizedException('Invalid Telegram signature');
     }
