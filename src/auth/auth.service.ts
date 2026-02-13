@@ -13,27 +13,30 @@ export class AuthService {
   ) {}
 
   verifyTelegram(initData: string) {
-    const token = process.env.TG_BOT_TOKEN;
-    if (!token) {
+    const botToken = process.env.TG_BOT_TOKEN;
+    if (!botToken) {
       return false;
     }
 
-    const secret = crypto.createHash('sha256').update(token).digest();
-
-    const parsed = new URLSearchParams(initData);
-    const hash = parsed.get('hash');
+    const urlParams = new URLSearchParams(initData);
+    const hash = urlParams.get('hash');
     if (!hash) {
       return false;
     }
 
-    parsed.delete('hash');
+    urlParams.delete('hash');
 
-    const dataCheckString = [...parsed.entries()]
-      .sort()
-      .map(([k, v]) => `${k}=${v}`)
+    const dataCheckString = [...urlParams.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => `${key}=${value}`)
       .join('\n');
 
-    const hmac = crypto.createHmac('sha256', secret).update(dataCheckString).digest('hex');
+    const secretKey = crypto.createHash('sha256').update(botToken).digest();
+
+    const hmac = crypto
+      .createHmac('sha256', secretKey)
+      .update(dataCheckString)
+      .digest('hex');
 
     return hmac === hash;
   }

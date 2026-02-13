@@ -9,6 +9,9 @@ export class AuthController {
   async telegram(@Body() body: { initData: string; ref?: number }) {
     const { initData, ref } = body || {};
 
+    console.log('BOT TOKEN:', process.env.TG_BOT_TOKEN?.slice(0, 10));
+    console.log('INIT DATA:', initData?.slice(0, 100));
+
     if (!initData) {
       throw new UnauthorizedException('Missing initData');
     }
